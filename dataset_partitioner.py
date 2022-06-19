@@ -69,25 +69,34 @@ def create_train_test_folder_partitions_simple(datasetpath_base, percentage_eval
                                                         random_state=random_state)
 
     print("Creating trainig partitioned folders...", len(X_train))
-    for i in range(0, num_train_samples):
-        # print(X_train[i] + " LABEL: " + str(y_train[i]))
-        path_src = X_train[i]
-        # extract the file name
-        file_name = ntpath.basename(path_src)
-        # print("File name", file_name)
-        path_dest = datasetpath_train + str(y_train[i]) + "/ "[:-1] + file_name
-        # print("COPY TO: " + path_dest)
-        copy2(path_src, path_dest)
+    # Generate the training labeled folders identically balanced
+    for y in range(num_classes):
+      X_train_np = np.array(X_train)
+      y_train_np = np.array(y_train)
+      X_train_np = X_train_np[y_train_np == y]
+      for i in range(0, num_train_samples // num_classes):
+          # print(X_train[i] + " LABEL: " + str(y_train[i]))
+          path_src = X_train_np[i]
+          # extract the file name
+          file_name = ntpath.basename(path_src)
+          # print("File name", file_name)
+          path_dest = datasetpath_train + str(y) + "/ "[:-1] + file_name
+          # print("COPY TO: " + path_dest)
+          copy2(path_src, path_dest)
 
     print("Creating test partitioned folders...", len(X_test))
-    for i in range(0, num_test_samples):
-        # print(X_test[i] + " LABEL: " + str(y_test[i]))
-        path_src = X_test[i]
-        file_name = ntpath.basename(path_src)
-        # print("File name", file_name)
-        path_dest = datasetpath_test + str(y_test[i]) + "/ "[:-1] + file_name
-        # print("COPY TO: " + path_dest)
-        copy2(path_src, path_dest)
+    for y in range(num_classes):
+      X_test_np = np.array(X_test)
+      y_test_np = np.array(y_test)
+      X_test_np = X_test_np[y_test_np == y]
+      for i in range(0, num_test_samples // num_classes):
+          # print(X_test[i] + " LABEL: " + str(y_test[i]))
+          path_src = X_test_np[i]
+          file_name = ntpath.basename(path_src)
+          # print("File name", file_name)
+          path_dest = datasetpath_test + str(y) + "/ "[:-1] + file_name
+          # print("COPY TO: " + path_dest)
+          copy2(path_src, path_dest)
 
 
 def create_folder_partitions_unlabeled_ood(labeled_dataset_path, iod_dataset_path, ood_dataset_path, dest_unlabeled_path_base,
